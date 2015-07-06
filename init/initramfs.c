@@ -17,6 +17,7 @@
 #include <linux/init_syscalls.h>
 #include <linux/task_work.h>
 #include <linux/umh.h>
+#include <linux/initramfs.h>
 
 static __initdata bool csum_present;
 static __initdata u32 io_csum;
@@ -695,8 +696,10 @@ static void __init populate_initrd_image(char *err)
 
 static void __init do_populate_rootfs(void *unused, async_cookie_t cookie)
 {
+	char *err;
+
 	/* Load the built in initramfs */
-	char *err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
+	err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
 	if (err)
 		panic_show_mem("%s", err); /* Failed to decompress INTERNAL initramfs */
 
@@ -750,8 +753,21 @@ void wait_for_initramfs(void)
 }
 EXPORT_SYMBOL_GPL(wait_for_initramfs);
 
+static int __initdata do_skip_initramfs;
+static int __init skip_initramfs_param(char *str)
+{
+	if (*str)
+		return 0;
+	do_skip_initramfs = 1;
+	return 1;
+}
+__setup("skip_initramfs", skip_initramfs_param);
+
 static int __init populate_rootfs(void)
 {
+	if (do_skip_initramfs)
+		return default_rootfs();
+
 	initramfs_cookie = async_schedule_domain(do_populate_rootfs, NULL,
 						 &initramfs_domain);
 	usermodehelper_enable();
