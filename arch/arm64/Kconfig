@@ -2303,6 +2303,14 @@ config DMI
 	  However, even with this option, the resultant kernel should
 	  continue to boot on existing non-UEFI platforms.
 
+config BUILD_ARM64_DT_OVERLAY
+	bool "enable DT overlay compilation support"
+	depends on OF
+	help
+	  This option enables support for DT overlay compilation.
+	  Enabling this option sets required flags to add DT
+	  overlay in the compilation.
+
 endmenu # "Boot options"
 
 menu "Power management options"
