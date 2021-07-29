@@ -42,7 +42,7 @@ $(obj)/Image.zst: $(obj)/Image FORCE
 	$(call if_changed,zstd)
 
 $(obj)/dtbo.img: $(DTBO_OBJS) FORCE
-	$(call if_changed,mkdtimg,4096) # align dtbo.img to 4kB
+	$(call if_changed,mkdtimg)
 
 EFI_ZBOOT_PAYLOAD	:= Image
 EFI_ZBOOT_BFD_TARGET	:= elf64-littleaarch64
