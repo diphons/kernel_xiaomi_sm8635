@@ -1520,6 +1520,10 @@ struct task_struct {
 	ANDROID_VENDOR_DATA_ARRAY(1, 64);
 	ANDROID_OEM_DATA_ARRAY(1, 6);
 
+#ifdef CONFIG_SPRD_ROTATION_TASK
+	u64 last_enqueue_ts;
+#endif
+
 #ifdef CONFIG_KRETPROBES
 	struct llist_head               kretprobe_instances;
 #endif
