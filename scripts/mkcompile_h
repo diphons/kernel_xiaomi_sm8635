@@ -22,8 +22,12 @@ else
    CC_VERSION="$KBUILD_COMPILER_STRING"
 fi
 
-LD_VERSION=$(LC_ALL=C $LD -v | head -n1 |
+if [ -z "$KBUILD_LINKER_STRING" ]; then
+   LD_VERSION=$(LC_ALL=C $LD -v | head -n1 |
 		sed -e 's/(compatible with [^)]*)//' -e 's/[[:space:]]*$//')
+else
+   LD_VERSION="$KBUILD_LINKER_STRING"
+fi
 
 cat <<EOF
 #define UTS_MACHINE		"${UTS_MACHINE}"
