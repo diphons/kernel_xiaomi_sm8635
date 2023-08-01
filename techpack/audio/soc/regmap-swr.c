@@ -10,7 +10,7 @@
 #include <linux/regmap.h>
 #include <linux/module.h>
 #include <linux/init.h>
-#include <soc/soundwire.h>
+#include "soc/soundwire.h"
 
 #define ADDR_BYTES                (2)
 #define ADDR_BYTES_4              (4)
