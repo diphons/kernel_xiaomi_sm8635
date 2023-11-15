@@ -256,12 +256,19 @@ out:
 	return error;
 }
 
+#if IS_ENABLED(CONFIG_KSU)
+extern int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags);
+#endif
 int vfs_fstatat(int dfd, const char __user *filename,
 			      struct kstat *stat, int flags)
 {
 	int ret;
 	int statx_flags = flags | AT_NO_AUTOMOUNT;
 	struct filename *name;
+
+#if IS_ENABLED(CONFIG_KSU)
+	ksu_handle_stat(&dfd, &filename, &flags);
+#endif
 
 	name = getname_flags(filename, getname_statx_lookup_flags(statx_flags), NULL);
 	ret = vfs_statx(dfd, name, statx_flags, stat, STATX_BASIC_STATS);
