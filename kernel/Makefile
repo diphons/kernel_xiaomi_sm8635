@@ -145,8 +145,11 @@ $(obj)/config_data.gz: $(obj)/config_data FORCE
 	$(call if_changed,gzip)
 
 filechk_cat = cat $<
-
+ifeq ($(CONFIG_BOARD_PERIDOT),y)
+$(obj)/config_data: arch/arm64/configs/peridot-stock_defconfig FORCE
+else
 $(obj)/config_data: $(KCONFIG_CONFIG) FORCE
+endif
 	$(call filechk,cat)
 
 $(obj)/kheaders.o: $(obj)/kheaders_data.tar.xz
