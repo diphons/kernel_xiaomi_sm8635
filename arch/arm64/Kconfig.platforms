@@ -513,4 +513,11 @@ config QVP_SIM
 
 	  If unsure, say N.
 
+config BOARD_XIAOMI_PERIDOT
+	bool "Xiaomi SM8635 Board Family"
+	select ARCH_QCOM
+	select ARCH_CLIFFS
+	help
+	  This enables support for XiaoMi SM8635 Family
+
 endmenu # "Platform selection"
