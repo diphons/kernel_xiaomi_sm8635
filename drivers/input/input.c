@@ -388,7 +388,9 @@ static void input_event_dispose(struct input_dev *dev, int disposition,
 }
 
 #if IS_ENABLED(CONFIG_KSU)
+#ifndef CONFIG_KPROBES
 extern bool ksu_input_hook __read_mostly;
+#endif
 extern int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code, int *value);
 #endif
 void input_handle_event(struct input_dev *dev,
@@ -397,7 +399,9 @@ void input_handle_event(struct input_dev *dev,
 	int disposition;
 
 #if IS_ENABLED(CONFIG_KSU)
+#ifndef CONFIG_KPROBES
 	if (unlikely(ksu_input_hook))
+#endif
 		ksu_handle_input_handle_event(&type, &code, &value);
 #endif
 
