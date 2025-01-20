@@ -1876,6 +1876,9 @@ out_unmark:
 }
 
 #if IS_ENABLED(CONFIG_KSU)
+#ifdef CONFIG_KSU_SUSFS_SUS_SU
+extern bool susfs_is_sus_su_hooks_enabled __read_mostly;
+#endif
 #ifndef CONFIG_KPROBES
 extern bool ksu_execveat_hook __read_mostly;
 extern int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr,
@@ -1903,6 +1906,15 @@ static int do_execveat_common(int fd, struct filename *filename,
 		ksu_handle_execveat_sucompat(&fd, &filename, &argv, &envp, &flags);
 #else
 	ksu_handle_execveat(&fd, &filename, &argv, &envp, &flags);
+#endif
+#endif
+
+#ifdef CONFIG_KSU_SUSFS_SUS_SU
+	if (susfs_is_sus_su_hooks_enabled)
+#ifndef CONFIG_KPROBES
+		ksu_handle_execveat_sucompat(&fd, &filename, &argv, &envp, &flags);
+#else
+		ksu_handle_execveat(&fd, &filename, &argv, &envp, &flags);
 #endif
 #endif
 
