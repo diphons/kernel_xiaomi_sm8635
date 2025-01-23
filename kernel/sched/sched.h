@@ -6,6 +6,7 @@
 #define _KERNEL_SCHED_SCHED_H
 
 #include <linux/sched/affinity.h>
+#include <linux/sched/clock.h>
 #include <linux/sched/autogroup.h>
 #include <linux/sched/cpufreq.h>
 #include <linux/sched/deadline.h>
