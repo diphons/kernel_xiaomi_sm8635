@@ -6070,6 +6070,13 @@ static inline void hrtick_update(struct rq *rq)
 }
 #endif
 
+#ifdef CONFIG_SPRD_ROTATION_TASK
+inline bool __cpu_overutilized(int cpu)
+{
+	return !fits_capacity(cpu_util_cfs(cpu), capacity_of(cpu));
+}
+#endif
+
 #ifdef CONFIG_SMP
 static inline bool cpu_overutilized(int cpu)
 {

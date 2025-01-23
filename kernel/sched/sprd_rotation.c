@@ -90,7 +90,7 @@ void check_for_task_rotation(struct rq *src_rq)
 		cpumask_set_cpu(i, &big_mask);
 
 		/* Check if upmigration is possible */
-		if (!cpu_overutilized(i))
+		if (!__cpu_overutilized(i))
 			return;
 	}
 

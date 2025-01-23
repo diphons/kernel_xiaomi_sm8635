@@ -3305,6 +3305,7 @@ static inline void clear_reserved(int cpu)
 }
 void check_for_task_rotation(struct rq *src_rq);
 u64 sched_ktime_clock(void);
+inline bool __cpu_overutilized(int cpu);
 #else
 static inline bool is_reserved(int cpu)
 {
