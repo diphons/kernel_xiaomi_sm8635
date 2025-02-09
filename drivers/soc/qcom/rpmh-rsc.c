@@ -696,7 +696,7 @@ static int check_for_req_inflight(struct rsc_drv *drv, struct tcs_group *tcs,
 				if (accl == HW_ACCL_VREG &&
 				    VREG_ADDR(addr) == VREG_ADDR(msg->cmds[k].addr))
 					return -EBUSY;
-				else if (addr == msg->cmds[k].addr)
+				else if (cmd_db_match_resource_addr(msg->cmds[k].addr, addr))
 					return -EBUSY;
 			}
 		}
