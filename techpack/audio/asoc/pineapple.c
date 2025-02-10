@@ -2532,7 +2532,6 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 
 	ret = msm_populate_dai_link_component_of_node(card);
 	if (ret) {
-		printk("<%s><%d>: X.\n", __func__, __LINE__);
 		ret = -EPROBE_DEFER;
 		goto err;
 	}
@@ -2628,7 +2627,6 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 	return 0;
 err:
 	devm_kfree(&pdev->dev, pdata);
-	printk("<%s><%d>: X, failed.\n", __func__, __LINE__);
 #if IS_ENABLED(CONFIG_MIEV)
 	if(ret != -EPROBE_DEFER) {
 		dev_dbg(&pdev->dev,"<%s><%d>: X, failed.non-DEFER skip sound card registration.\n", __func__, __LINE__);
