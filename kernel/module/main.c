@@ -2302,6 +2302,8 @@ int __weak module_frob_arch_sections(Elf_Ehdr *hdr,
 /* module_blacklist is a comma-separated list of module names */
 static char *module_blacklist;
 static char *custom_module_blacklist[] = {
+	/* Xioami */
+	"hwid",
     /* ZRAM */
 	"zram","zsmalloc",
     /* Coresight */
