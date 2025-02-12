@@ -274,7 +274,7 @@ ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), chenfeng))
 	            -DAUDIO_MBHC_ABNORMAL
 endif
 
-ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), peridot))
+ifdef CONFIG_BOARD_XIAOMI_PERIDOT
 	CDEFINES += -DCONFIG_TARGET_PRODUCT_PERIDOT
 	CDEFINES += -DCONFIG_DISABLE_WCD_USB_I2C
 endif
