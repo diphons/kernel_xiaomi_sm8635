@@ -141,7 +141,7 @@ ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), chenfeng))
     CDEFINES += -DCONFIG_TARGET_PRODUCT_CHENFENG
 endif
 
-ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), peridot))
+ifdef CONFIG_BOARD_XIAOMI_PERIDOT
     CDEFINES += -DCONFIG_TARGET_PRODUCT_PERIDOT
 endif
 
