@@ -14,7 +14,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/firmware.h>
 #include <sound/core.h>
-#include <sound/cs35l41.h>
+#include "cs35l41_user.h"
 
 #include "wm_adsp.h"
 
