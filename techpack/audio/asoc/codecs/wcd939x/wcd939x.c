@@ -4726,14 +4726,18 @@ static void wcd_usbss_set_ovp_threshold(u32 threshold)
 	uint32_t ovp_regs[2][2] = {{WCD_USBSS_DP_EN, 0x00}, {WCD_USBSS_DN_EN, 0x00}};
 
 	/* Get current register values */
+#if IS_ENABLED(CONFIG_QCOM_WCD_USBSS_I2C)
 	wcd_usbss_register_update(ovp_regs, WCD_USBSS_READ, ARRAY_SIZE(ovp_regs));
+#endif
 	/* Overwrite OVP tresholds */
 	ovp_regs[0][1] &= (~P_THRESH_SEL_MASK);
 	ovp_regs[0][1] |= (threshold << P_THRESH_SEL_SHIFT);
 	ovp_regs[1][1] &= (~P_THRESH_SEL_MASK);
 	ovp_regs[1][1] |= (threshold << P_THRESH_SEL_SHIFT);
 	/* Write updated register values */
+#if IS_ENABLED(CONFIG_QCOM_WCD_USBSS_I2C)
 	wcd_usbss_register_update(ovp_regs, WCD_USBSS_WRITE, ARRAY_SIZE(ovp_regs));
+#endif
 }
 
 static int wcd939x_reset(struct device *dev)
