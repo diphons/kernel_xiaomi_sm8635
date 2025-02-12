@@ -2959,15 +2959,19 @@ static int wm_adsp_load_coeff(struct wm_adsp *dsp)
 
 		case WMFW_HALO_PM_PACKED:
 			burst_multiple += 8; /* plus the 8 below yields 20 */
-			/* fall through */
+			fallthrough;
 		case WMFW_HALO_XM_PACKED:
 		case WMFW_HALO_YM_PACKED:
 			burst_multiple += 8; /* yields 12 */
-			/* fall through */
+			fallthrough;
 		case WMFW_ADSP1_DM:
+			fallthrough;
 		case WMFW_ADSP1_ZM:
+			fallthrough;
 		case WMFW_ADSP2_XM:
+			fallthrough;
 		case WMFW_ADSP2_YM:
+			fallthrough;
 		case WMFW_VPU_DM:
 			adsp_dbg(dsp, "%s.%d: %d bytes in %x for %x\n",
 				 file, blocks, le32_to_cpu(blk->len),
@@ -3612,9 +3616,6 @@ int wm_adsp_event(struct snd_soc_dapm_widget *w,
 		}
 
 		dsp->running = true;
-		complete(&dsp->halo_booted_done);
-		adsp_info(dsp, "debugPA dsp->running %d dsp->booted %d\n",
-				dsp->running, dsp->booted);
 
 		mutex_unlock(&dsp->pwr_lock);
 		break;
@@ -3633,8 +3634,6 @@ int wm_adsp_event(struct snd_soc_dapm_widget *w,
 		mutex_lock(&dsp->pwr_lock);
 
 		dsp->running = false;
-		adsp_info(dsp, "debugPA dsp->running %d dsp->booted %d\n",
-				dsp->running, dsp->booted);
 
 		if (dsp->ops->stop_core)
 			dsp->ops->stop_core(dsp);
@@ -3780,7 +3779,6 @@ int wm_halo_init(struct wm_adsp *dsp, struct mutex *rate_lock)
 	dsp->ops = &wm_halo_ops;
 
 	INIT_WORK(&dsp->boot_work, wm_adsp_boot_work);
-	init_completion(&dsp->halo_booted_done);
 
 	dsp->rate_lock = rate_lock;
 	dsp->rx_rate_cache = kcalloc(dsp->n_rx_channels, sizeof(u8),

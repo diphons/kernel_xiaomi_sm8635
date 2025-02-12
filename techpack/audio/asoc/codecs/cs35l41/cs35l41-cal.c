@@ -127,6 +127,11 @@ static int cs35l41_spksw_gpio_put(struct snd_kcontrol *kcontrol,
 static int cs35l41_rcv_switch_pinctrl_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct cs35l41_private	*cs35l41 = snd_soc_component_get_drvdata(component);
+	ucontrol->value.integer.value[0] = 0;
+	if (cs35l41->cs35l41_rcv_pinctrl && cs35l41->enable_rcv_pin_control)
+		ucontrol->value.integer.value[0] = cs35l41->enable_rcv_switch;
 	return 0;
 }
 
@@ -155,77 +160,6 @@ static int cs35l41_rcv_switch_pinctrl_put(struct snd_kcontrol *kcontrol,
     return 0;
 }
 
-static int cs35l41_rw_registers_get(struct snd_kcontrol *kcontrol,
-        unsigned int __user *data, unsigned int size)
-{
-    struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
-    struct cs35l41_private *cs35l41 = snd_soc_component_get_drvdata(component);
-    int *buff = cs35l41->ctlbuf;
-    int ret = 0;
-
-    dev_dbg(cs35l41->dev, "Get: size = %d, %08x %08x %08x %08x %08x %08x %08x\n",
-            size, buff[0], buff[1], buff[2], buff[3],
-            buff[4], buff[5], buff[6]);
-
-    if (size > REG_VALUE_SIZE)
-        return -EINVAL;
-
-    if (copy_to_user(data, buff, size))
-        ret = -EFAULT;
-
-    return ret;
-}
-
-static int cs35l41_rw_registers_put(struct snd_kcontrol *kcontrol,
-        const unsigned int __user *data, unsigned int size)
-{
-    struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
-    struct cs35l41_private *cs35l41 = snd_soc_component_get_drvdata(component);
-    int *buff, reg, val;
-    int rw, num = 0;
-    int i, ret = 0;
-
-    if (size > REG_VALUE_SIZE)
-        return -EINVAL;
-
-    memset(cs35l41->ctlbuf, 0x00, REG_VALUE_SIZE);
-    if (copy_from_user(cs35l41->ctlbuf, data, size)) {
-        ret = -EFAULT;
-        goto exit;
-    }
-
-    buff = cs35l41->ctlbuf;
-    rw = be32_to_cpu(buff[2]) & 0xFF;
-    num = (be32_to_cpu(buff[2]) >> 8) & 0xFF;
-    dev_dbg(cs35l41->dev, "Put: size = %d, %08x %08x %08x %08x %08x %08x %08x\n",
-            size, buff[0], buff[1], buff[2], buff[3],
-            buff[4], buff[5], buff[6]);
-
-    buff = &buff[3];
-    if(rw == 0x80) { /* 0x80 stand for write */
-        for(i = 0; i < num; i ++) {
-            reg = be32_to_cpu(buff[i * 2]);
-            val = be32_to_cpu(buff[i * 2 + 1]);
-            ret = regmap_write(cs35l41->regmap, reg, val);
-            dev_info(cs35l41->dev, "ctl write: %x <== %x, %s\n",
-                    reg, val, ret==0 ? "ok":"failed");
-        }
-    }
-
-    if(rw == 0x81) { /* 0x81 stand for read */
-        for(i = 0; i < num; i ++) {
-            reg = be32_to_cpu(buff[i * 2]);
-            ret = regmap_read(cs35l41->regmap, reg, &val);
-            dev_info(cs35l41->dev, "ctl read: %x ==> %x, ret = %d\n",
-                    reg, val, ret);
-            buff[i * 2 + 1] = ((ret==0) ? be32_to_cpu(val) : be32_to_cpu(0xBEDEAD));
-        }
-    }
-
-exit:
-    return 0;
-}
-
 static int cs35l41_spksw_gpio_init(struct cs35l41_private *cs35l41)
 {
     int ret = 0;
@@ -245,7 +179,6 @@ static void cs35l41_ignore_suspend_widgets(struct snd_soc_component *component)
 {
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
 	struct cs35l41_private *cs35l41 = snd_soc_component_get_drvdata(component);
-#if LINUX_VERSION_CODE > KERNEL_VERSION(5,10,70)
 	dev_info(cs35l41->dev,
             "Linux kernel version > 5.10.70, using ignore_suspend WITHOUT name_prefix");
 	snd_soc_dapm_ignore_suspend(dapm, "AMP Playback");
@@ -260,35 +193,6 @@ static void cs35l41_ignore_suspend_widgets(struct snd_soc_component *component)
 	snd_soc_dapm_ignore_suspend(dapm, "DSP1 Preloader");
 	snd_soc_dapm_ignore_suspend(dapm, "DSP1 Preload");
 	snd_soc_dapm_ignore_suspend(dapm, "AMP Enable");
-#else
-	char widget[32];
-	dev_info(cs35l41->dev,
-            "Linux kernel version <= 5.10.70, using ignore_suspend with name_prefix");
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "AMP Playback");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "AMP Capture");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "Main AMP");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "SPK");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "VP");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "VBST");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "ISENSE");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "VSENSE");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "TEMP");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "DSP1 Preloader");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "DSP1 Preload");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-	snprintf(widget, sizeof(widget), "%s %s", component->name_prefix, "AMP Enable");
-	snd_soc_dapm_ignore_suspend(dapm, widget);
-#endif
 }
 
 #ifdef CONFIG_SWITCH_PROTECTION
@@ -324,7 +228,7 @@ int wm_halo_apply_calibration(struct snd_soc_dapm_widget *w)
 	/* checksum = calr + status*/
 	__be32 checksum = cpu_to_be32(1 + cs35l41->calr);
 	__be32 ambient = cpu_to_be32(cs35l41->ambient);
-	__be32 us_bypass = cpu_to_be32(1);
+//	__be32 us_bypass = cpu_to_be32(1);
     __be32 max_lrclk_delay = cpu_to_be32(0x20);
 
 	if (dsp->fw == WM_ADSP_FW_SPK_PROT) {
@@ -344,7 +248,7 @@ int wm_halo_apply_calibration(struct snd_soc_dapm_widget *w)
         dev_info(dsp->dev, "Read back %s DSP1 Protection 400a4 DC_OFFSET_HOLD_TIME is 0x%x \n",
                  dsp->component->name_prefix, be32_to_cpu(dc_offset_hold_time));
 
-		if (dsp->component->name_prefix &&
+/*		if (dsp->component->name_prefix &&
 				(!strcmp(dsp->component->name_prefix, "TL")
 				|| !strcmp(dsp->component->name_prefix, "T"))) {
 			ret = wm_adsp_write_ctl(dsp, "ENABLE_FULL_US_BYPASS",
@@ -358,7 +262,7 @@ int wm_halo_apply_calibration(struct snd_soc_dapm_widget *w)
                              &us_bypass, sizeof(us_bypass));
             dev_info(dsp->dev, "Read back %s DSP1 Protection 400a4 BLE_FULL_US_BYPASS is %d \n",
                      dsp->component->name_prefix, be32_to_cpu(us_bypass));
-		}
+		}*/
 
 		dev_info(dsp->dev, "CAL_R <= %d\n", be32_to_cpu(calr));
         if (cs35l41->calr <= 0) {

@@ -85,6 +85,9 @@ static int cs35l41_i2c_probe(struct i2c_client *client,
 		ret = PTR_ERR(cs35l41->regmap);
 		dev_err(cs35l41->dev, "Failed to allocate register map: %d\n",
 			ret);
+#if IS_ENABLED(CONFIG_MIEV)
+		mievent_report(906001353,"PA i2c exception",cs35l41->dev);
+#endif
 		return ret;
 	}
 	ret = cs35l41_probe(cs35l41, pdata);
@@ -97,11 +100,11 @@ static int cs35l41_i2c_probe(struct i2c_client *client,
 	return ret;
 }
 
-static int cs35l41_i2c_remove(struct i2c_client *client)
+static void cs35l41_i2c_remove(struct i2c_client *client)
 {
 	struct cs35l41_private *cs35l41 = i2c_get_clientdata(client);
 
-	return cs35l41_remove(cs35l41);
+	cs35l41_remove(cs35l41);
 }
 
 #ifdef CONFIG_OF

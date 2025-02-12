@@ -101,9 +101,6 @@ struct wm_adsp {
 
 	struct work_struct boot_work;
 
-	struct work_struct delta_work;
-	struct completion halo_booted_done;
-
 	struct list_head compr_list;
 	struct list_head buffer_list;
 

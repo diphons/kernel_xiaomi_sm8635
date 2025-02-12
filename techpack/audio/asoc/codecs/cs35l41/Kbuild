@@ -27,6 +27,14 @@ ifeq ($(KERNEL_BUILD), 0)
 		include $(AUDIO_ROOT)/config/waipioauto.conf
 		INCS    +=  -include $(AUDIO_ROOT)/config/waipioautoconf.h
 	endif
+	ifeq ($(CONFIG_ARCH_KALAMA), y)
+		include $(AUDIO_ROOT)/config/kalamaauto.conf
+		INCS    +=  -include $(AUDIO_ROOT)/config/kalamaautoconf.h
+	endif
+	ifeq ($(CONFIG_ARCH_PINEAPPLE), y)
+		include $(AUDIO_ROOT)/config/pineappleauto.conf
+		INCS    +=  -include $(AUDIO_ROOT)/config/pineappleautoconf.h
+	endif
 
 endif
 
@@ -91,20 +99,8 @@ CDEFINES +=	-DANI_LITTLE_BYTE_ENDIAN \
 		-Werror\
 		-D__linux__
 
-ifneq (,$(filter $(TARGET_PRODUCT), zeus))
-	CDEFINES += -DCONFIG_TARGET_PRODUCT_ZEUS
-endif
-
-ifneq (,$(filter $(TARGET_PRODUCT), cupid))
-	CDEFINES += -DCONFIG_TARGET_PRODUCT_CUPID
-endif
-
-ifneq (,$(filter $(TARGET_PRODUCT), thor))
-	CDEFINES += -DCONFIG_TARGET_PRODUCT_THOR
-endif
-
-ifneq (,$(filter $(TARGET_PRODUCT), diting))
-        CDEFINES += -DCONFIG_TARGET_PRODUCT_DITING
+ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), houji))
+	CDEFINES += -DCONFIG_TARGET_PRODUCT_HOUJI
 endif
 
 KBUILD_CPPFLAGS += $(CDEFINES)
@@ -120,14 +116,6 @@ endif
 
 ifeq ($(call cc-option-yn, -Wheader-guard),y)
 EXTRA_CFLAGS += -Wheader-guard
-endif
-
-ifeq ($(KERNEL_BUILD), 0)
-KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/audio-kernel/ipc/Module.symvers
-KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/audio-kernel/dsp/Module.symvers
-KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/audio-kernel/asoc/Module.symvers
-KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/audio-kernel/asoc/codecs/Module.symvers
-KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/audio-kernel/soc/Module.symvers
 endif
 
 # Module information used by KBuild framework
