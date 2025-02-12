@@ -1217,7 +1217,7 @@ static ssize_t usbcss_sysfs_store(struct kobject *kobj, struct kobj_attribute *a
 		usbcss_hs->diff_slope_factor_times_1000 = val;
 	} else if (strcmp(attr->attr.name, "lin_k_aud") == 0) {
 		if (val < MIN_K_TIMES_100 || val > MAX_K_TIMES_100) {
-			dev_err(wcd939x->dev, "%s: Value %d out of bounds. Min: %d, Max: %d\n",
+			dev_err(wcd939x->dev, "%s: Value %ld out of bounds. Min: %d, Max: %d\n",
 			__func__, val, MIN_K_TIMES_100, MAX_K_TIMES_100);
 			return count;
 		}
@@ -1583,7 +1583,7 @@ static void wcd939x_wcd_mbhc_calc_impedance(struct wcd_mbhc *mbhc, uint32_t *zl,
 			*zdiff = z1Diff;
 			wcd939x_wcd_mbhc_qfuse_cal(component, zdiff, 0);
 			dev_dbg(component->dev,
-				"%s: Calibrated differential measurement %d is %d(mohms)\n",
+				"%s: Calibrated differential measurement %zu is %d(mohms)\n",
 				__func__, i + 1, *zdiff);
 			apply_zdet_correction(zdiff, ZDET_DIFF,
 					      pdata->usbcss_hs.se_slope_factor_times_1000,
@@ -1592,7 +1592,7 @@ static void wcd939x_wcd_mbhc_calc_impedance(struct wcd_mbhc *mbhc, uint32_t *zl,
 			zdiff_counter++;
 		}
 		dev_dbg(component->dev,
-			"%s: Calibrated and adjusted differential measurement %d is %d(mohms)\n",
+			"%s: Calibrated and adjusted differential measurement %zu is %d(mohms)\n",
 			__func__, i + 1, *zdiff);
 	}
 	/* Take average of measurements */
@@ -1663,7 +1663,7 @@ static void wcd939x_wcd_mbhc_calc_impedance(struct wcd_mbhc *mbhc, uint32_t *zl,
 		r_gnd_res_tot_mohms);
 	/* Print r_common_gnd buffer */
 	for (i = 0; i < R_COMMON_GND_BUFFER_SIZE; i++) {
-		dev_dbg(component->dev, "%s: Element %d in r_common_gnd_buffer is : %d mohms\n",
+		dev_dbg(component->dev, "%s: Element %zu in r_common_gnd_buffer is : %d mohms\n",
 			__func__, i + 1, pdata->usbcss_hs.gnd.r_cm_gnd_buffer.data[i]);
 	}
 	/* Apply r_common_gnd offset */
