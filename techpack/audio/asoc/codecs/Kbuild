@@ -257,6 +257,28 @@ CDEFINES +=	-DANI_LITTLE_BYTE_ENDIAN \
 		-Werror\
 		-D__linux__
 
+ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), shennong))
+	CDEFINES += -DCONFIG_TARGET_PRODUCT_SHENNONG
+endif
+
+ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), houji))
+	CDEFINES += -DCONFIG_TARGET_PRODUCT_HOUJI
+endif
+
+ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), manet))
+	CDEFINES += -DCONFIG_TARGET_PRODUCT_MANET
+endif
+
+ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), chenfeng))
+	CDEFINES += -DCONFIG_TARGET_PRODUCT_CHENFENG \
+	            -DAUDIO_MBHC_ABNORMAL
+endif
+
+ifneq (, $(filter $(word 2,$(subst _, ,$(TARGET_PRODUCT))), peridot))
+	CDEFINES += -DCONFIG_TARGET_PRODUCT_PERIDOT
+	CDEFINES += -DCONFIG_DISABLE_WCD_USB_I2C
+endif
+
 KBUILD_CPPFLAGS += $(CDEFINES)
 
 # Currently, for versions of gcc which support it, the kernel Makefile
@@ -283,6 +305,11 @@ ifeq ($(KERNEL_BUILD), 1)
 	obj-y	+= wsa884x/
 	obj-y	+= wsa883x/
 	obj-y	+= rouleur/
+	obj-y	+= cs35l41/
+	obj-y	+= cs35l43/
+	obj-y	+= tlv320aic3x/
+	obj-y	+= aw882xx/
+	obj-y	+= tef668x/
 	obj-y	+= ./
 endif
 # Module information used by KBuild framework

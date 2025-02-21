@@ -20,7 +20,11 @@ static struct snd_soc_dai_driver msm_stub_dais[] = {
 		.playback = { /* Support maximum range */
 			.stream_name = "Playback",
 			.channels_min = 1,
+#if defined(CONFIG_TARGET_PRODUCT_CHENFENG) || defined(CONFIG_TARGET_PRODUCT_PERIDOT)
+ 			.channels_max = 8,
+#else
 			.channels_max = 32,
+#endif
 			.rates = SNDRV_PCM_RATE_8000_96000,
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
 				    SNDRV_PCM_FMTBIT_S24_LE |
@@ -33,7 +37,11 @@ static struct snd_soc_dai_driver msm_stub_dais[] = {
 		.capture = { /* Support maximum range */
 			.stream_name = "Record",
 			.channels_min = 1,
+#if defined(CONFIG_TARGET_PRODUCT_CHENFENG) || defined(CONFIG_TARGET_PRODUCT_PERIDOT)
+ 			.channels_max = 8,
+#else
 			.channels_max = 32,
+#endif
 			.rates = SNDRV_PCM_RATE_8000_96000,
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
 				    SNDRV_PCM_FMTBIT_S24_LE |
@@ -42,7 +50,7 @@ static struct snd_soc_dai_driver msm_stub_dais[] = {
 		},
 	},
 };
-
+#endif
 static const struct snd_soc_component_driver soc_msm_stub = {
 	.name = DRV_NAME,
 };
