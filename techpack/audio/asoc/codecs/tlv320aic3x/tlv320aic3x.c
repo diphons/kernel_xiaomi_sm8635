@@ -287,7 +287,7 @@ static int lpass_tlv_clk_enable_get(struct snd_kcontrol *kcontrol,
 
 	ucontrol->value.bytes.data[0] = (unsigned char)aic3x->is_tlv_mclk_on;
 
-  	dev_err(component->dev, "%s: value: %lu\n", __func__,
+  	dev_err(component->dev, "%s: value: %hhu\n", __func__,
   		ucontrol->value.bytes.data[0]);
 
 	return 0;
@@ -354,7 +354,7 @@ static int aic3x_reset_pin_ctrl_get(struct snd_kcontrol *kcontrol,
 
 	ucontrol->value.bytes.data[0] = (unsigned char)aic3x->reset_gpio_output_status;
 
-	dev_dbg(component->dev, "%s: value: %lu\n", __func__,
+	dev_dbg(component->dev, "%s: value: %hhu\n", __func__,
   		ucontrol->value.bytes.data[0]);
 
 	return 0;
@@ -414,7 +414,7 @@ static int amp_mute_pin_ctrl_get(struct snd_kcontrol *kcontrol,
 
 	ucontrol->value.bytes.data[0] = (unsigned char)aic3x->amp_mute_gpio_output_status;
 
-	dev_err(component->dev, "%s: value: %lu\n", __func__,
+	dev_err(component->dev, "%s: value: %hhu\n", __func__,
   		ucontrol->value.bytes.data[0]);
 
 	return 0;

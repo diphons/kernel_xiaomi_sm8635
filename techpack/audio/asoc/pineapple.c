@@ -1579,8 +1579,7 @@ static int msm_snd_card_late_probe(struct snd_soc_card *card)
 	rtd = snd_soc_get_pcm_runtime(card, &card->dai_link[0]);
 	if (!rtd) {
 		dev_err(card->dev,
-			"%s: snd_soc_get_pcm_runtime for %s failed!\n",
-			__func__, card->dai_link[0]);
+			"%s: snd_soc_get_pcm_runtime failed!\n", __func__);
 		return -EINVAL;
 	}
 
@@ -2290,8 +2289,7 @@ static int pineapple_ssr_enable(struct device *dev, void *data)
 	rtd_wcd = snd_soc_get_pcm_runtime(card, &card->dai_link[0]);
 	if (!rtd_wcd) {
 		dev_dbg(dev,
-			"%s: snd_soc_get_pcm_runtime for %s failed!\n",
-			__func__, card->dai_link[0]);
+			"%s: snd_soc_get_pcm_runtime failed!\n", __func__);
 	}
 
 	if (pdata->wsa_max_devs > 0) {
@@ -2299,8 +2297,7 @@ static int pineapple_ssr_enable(struct device *dev, void *data)
 			&card->dai_link[ARRAY_SIZE(msm_rx_tx_cdc_dma_be_dai_links)]);
 		if (!rtd_wsa) {
 			dev_dbg(dev,
-			"%s: snd_soc_get_pcm_runtime for %s failed!\n",
-			__func__, card->dai_link[ARRAY_SIZE(msm_rx_tx_cdc_dma_be_dai_links)]);
+			"%s: snd_soc_get_pcm_runtime failed!\n", __func__);
 		}
 	}
 
